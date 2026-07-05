@@ -60,16 +60,43 @@ Jalankan migrasi dari direktori `Rekgizi_BE`:
 python migrate.py
 ```
 
-Seeder bersifat opsional. Jalankan setelah migrasi; `parameter_seed` harus dijalankan sebelum `opsi_parameter_seed`:
+Seeder bersifat opsional. Jalankan setelah migrasi.
+
+Untuk data dummy production minimal:
 
 ```powershell
+python -m app.seeder.production_dummy_seed
+```
+
+Seeder ini mengisi master parameter beserta opsi, master intervensi, 1 akun admin, dan 1 akun ahli gizi. Password default akun dummy adalah `password`.
+
+Untuk data preview/demo fitur yang lebih lengkap:
+
+```powershell
+python -m app.seeder.preview_dummy_seed
+```
+
+Seeder preview menjalankan data production dummy, menambah user preview, diagnosis, artikel, pasien dataset, dan rekam medis simulasi.
+
+Jika ingin menjalankan seeder satu per satu, `parameter_seed` harus dijalankan sebelum `opsi_parameter_seed`:
+
+```powershell
+python -m app.seeder.parameter_seed
+python -m app.seeder.opsi_parameter_seed
+python -m app.seeder.Diagnosa_seed
 python -m app.seeder.user_seed
 python -m app.seeder.intervensi_seed
 python -m app.seeder.article
 python -m app.seeder.dataset_pasien_seed
 ```
 
-`dataset_pasien_seed` membaca dataset klinis yang disertakan di backend dan otomatis menjalankan seeder parameter, opsi parameter, serta diagnosis terlebih dahulu. Seeder ini idempotent: user dan asesmen dikenali melalui email/tanggal asesmen deterministik, nilai parameter null dilewati, dan usia yang tidak tersedia diasumsikan 45 tahun.
+Untuk mengisi master parameter, opsi, diagnosis, serta 20 pasien beserta rekam medisnya dalam satu langkah:
+
+```powershell
+python -m app.seeder.dataset_pasien_seed
+```
+
+`dataset_pasien_seed` membaca dataset klinis yang disertakan di backend dan otomatis menjalankan seeder parameter, opsi parameter, serta diagnosis terlebih dahulu. Seeder membuat akun `pasien.dataset.001@example.com` sampai `pasien.dataset.020@example.com` dengan password development `password`. Saat dijalankan ulang, akun lama berdomain `@rekgizi.test` otomatis diperbarui tanpa membuat user duplikat. Tanggal lahir dibuat bervariasi sesuai kelompok usia, jenis kelamin dibuat bergantian karena kedua nilai tersebut tidak tersedia di CSV, nilai parameter null dilewati, dan usia yang tidak tersedia diasumsikan 45 tahun.
 
 Jalankan API:
 

@@ -135,6 +135,16 @@ const mode = ref<'add' | 'edit'>('add')
 const selectedId = ref<number | null>(null)
 const userId = localStorage.getItem('id')
 const jadwalTersedia = ref<jadwalTersedia[]>([])
+const dayOrder: Record<string, number> = {
+  minggu: 0,
+  senin: 1,
+  selasa: 2,
+  rabu: 3,
+  kamis: 4,
+  jumat: 5,
+  "jum'at": 5,
+  sabtu: 6,
+}
 
 interface jadwalTersedia {
   id: number
@@ -149,6 +159,20 @@ const formJadwal = ref({
   end_time: '',
   day_of_week: '',
 })
+
+function getDayOrder(day: string) {
+  return dayOrder[day.trim().toLowerCase()] ?? 99
+}
+
+function sortJadwalByDayAndTime(a: jadwalTersedia, b: jadwalTersedia) {
+  const dayComparison = getDayOrder(a.day_of_week) - getDayOrder(b.day_of_week)
+
+  if (dayComparison !== 0) {
+    return dayComparison
+  }
+
+  return a.start_time.localeCompare(b.start_time)
+}
 
 function openAddModal() {
   mode.value = 'add'
@@ -227,7 +251,7 @@ async function jadwalTersediaMapping() {
     day_of_week: item.day_of_week,
     start_time: item.start_time,
     end_time: item.end_time,
-  }))
+  })).sort(sortJadwalByDayAndTime)
 }
 
 async function deleteJadwal(id: number) {
