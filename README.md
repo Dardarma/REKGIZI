@@ -15,7 +15,7 @@ Rekgizi terdiri dari dua aplikasi:
 
 ## 1. Menyiapkan database PostgreSQL
 
-Masuk ke PostgreSQL menggunakan pgAdmin atau `psql`, lalu buat database:
+Create database dengan nama `rekgizi`  atau jika ditulis dengan sql sebagai berikut: 
 
 ```sql
 CREATE DATABASE rekgizi;
@@ -30,6 +30,13 @@ postgresql+psycopg2://<username>:<password>@<host>:<port>/<database>
 Contoh lokal: `postgresql+psycopg2://postgres:postgres@localhost:5432/rekgizi`. Jika username atau password memuat karakter khusus seperti `@`, `:`, `/`, atau `#`, encode karakter tersebut dalam format URL.
 
 ## 2. Menyiapkan backend
+
+### ⚠️ Catatan Penting: Kompatibilitas Terminal (Khusus Windows)
+
+**Jangan gunakan Git Bash, MinGW, atau MSYS** untuk mengelola *virtual environment* (`venv`) atau menjalankan proyek ini di Windows. Lingkungan tersebut sering kali menyebabkan error pembacaan *path*, masalah pada instalasi beberapa *library* Python, atau terminal menjadi tidak responsif (*hang*).
+
+* **Rekomendasi Windows:** Gunakan **Command Prompt (CMD)** atau **PowerShell** bawaan.
+* **Pengguna macOS / Linux:** Abaikan peringatan ini. Anda bisa menggunakan terminal bawaan (*Bash/Zsh*) seperti biasa tanpa kendala tersebut.
 
 ```powershell
 cd Rekgizi_BE
@@ -78,6 +85,19 @@ python -m app.seeder.preview_dummy_seed
 
 Seeder preview menjalankan data production dummy, menambah user preview, diagnosis, artikel, pasien dataset, dan rekam medis simulasi.
 
+### Akun demo hasil seeder
+
+Gunakan akun berikut untuk login setelah menjalankan seeder:
+
+| Seeder | Role | Email | Password |
+| --- | --- | --- | --- |
+| `production_dummy_seed` atau `preview_dummy_seed` | Admin | `admin@example.com` | `password` |
+| `production_dummy_seed` atau `preview_dummy_seed` | Ahli gizi | `ahligizi@example.com` | `password` |
+| `preview_dummy_seed` atau `user_seed` | Pasien | `user@example.com` | `password` |
+| `dataset_pasien_seed` atau `preview_dummy_seed` | Pasien dataset | `pasien.dataset.001@example.com` sampai `pasien.dataset.020@example.com` | `password` |
+
+File `Rekgizi_BE/data user.txt` berisi contoh payload registrasi manual untuk pasien dan ahli gizi jika ingin mencoba endpoint register/create user.
+
 Jika ingin menjalankan seeder satu per satu, `parameter_seed` harus dijalankan sebelum `opsi_parameter_seed`:
 
 ```powershell
@@ -116,7 +136,7 @@ Versi kompatibel dicatat di `Rekgizi_BE/requirements.txt`.
 | SQLAlchemy, psycopg2-binary | ORM dan koneksi PostgreSQL. |
 | Pydantic, email-validator | Validasi request/response dan alamat email. |
 | python-dotenv | Membaca konfigurasi `.env`. |
-| python-jose, PyJWT, Passlib, bcrypt | JWT dan hashing password. |
+| python-jose, PyJWT, Passlib, bcrypt, argon2-cffi | JWT dan hashing password. |
 | python-multipart | Upload file melalui form multipart. |
 | firebase-admin | Mengirim push notification FCM dari backend. |
 | NumPy, pandas, scikit-learn, joblib | Memuat dan menjalankan pipeline machine learning. |
@@ -136,7 +156,7 @@ Isi `.env` frontend:
 
 | Variabel | Wajib | Keterangan |
 | --- | --- | --- |
-| `VITE_API_URL` | Ya | Origin backend, contoh `http://127.0.0.1:8000`. |
+| `VITE_API_URL` | Ya | Origin backend lengkap dengan port, contoh `http://localhost:8000` atau `http://127.0.0.1:8000`. |
 | `VITE_FIREBASE_API_KEY` | Untuk FCM | Firebase Web API key. |
 | `VITE_FIREBASE_AUTH_DOMAIN` | Untuk FCM | Firebase auth domain. |
 | `VITE_FIREBASE_PROJECT_ID` | Untuk FCM | Firebase project ID. |
@@ -144,6 +164,8 @@ Isi `.env` frontend:
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | Untuk FCM | Firebase sender ID. |
 | `VITE_FIREBASE_APP_ID` | Untuk FCM | Firebase web app ID. |
 | `VITE_FIREBASE_VAPID_KEY` | Untuk FCM | Public VAPID key untuk Web Push. |
+
+Penting: backend default dijalankan pada port `8000`, jadi `.env` frontend harus mengarah ke `VITE_API_URL=http://localhost:8000` jika mengikuti perintah Uvicorn di README ini. Jangan hanya mengisi `http://localhost`, `http://127.0.0.1`, atau port frontend `5173`, karena request API dari frontend akan gagal menuju backend.
 
 Semua variabel berawalan `VITE_` dikirim ke browser. Jangan menaruh service account, private key, atau secret backend di frontend.
 
