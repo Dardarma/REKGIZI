@@ -5,6 +5,9 @@ Rekgizi terdiri dari dua aplikasi:
 - `Rekgizi_BE`: REST API FastAPI, SQLAlchemy, PostgreSQL, dan layanan Firebase Cloud Messaging (FCM).
 - `Rekgizi_FE`: aplikasi Vue 3 + TypeScript yang dibangun dengan Vite dan Tailwind CSS.
 
+project dapat diinisiasi dengan github sebagai berikut
+`https://github.com/Dardarma/REKGIZI.git`
+
 ## Prasyarat
 
 - Python 3.11 atau 3.12 (direkomendasikan)
